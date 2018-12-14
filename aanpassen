@@ -1,0 +1,87 @@
+<?php
+require 'connect-db.php';
+$zaal_ID = $naam = $prijs = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $naam = filter_input(INPUT_POST, 'naam', FILTER_SANITIZE_STRING);
+    $prijs = filter_input(INPUT_POST, 'prijs', FILTER_SANITIZE_NUMBER_FLOAT);
+
+
+    $sql = "UPDATE `zalen` SET `naam` = :naam, `prijs` = :prijs  WHERE zaal_ID = :zaal_ID";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':zaal_ID' => $_GET['zaal_ID'],
+            ':naam' => $_POST['naam'],
+            ':prijs' => $_POST['prijs']
+        ]);
+}
+
+$stmt = $conn->prepare('SELECT zaal_ID, naam, prijs FROM zalen WHERE zaal_ID = :zaal_ID');
+$stmt->execute([
+    ':zaal_ID' => $_GET['zaal_ID']
+]);
+$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Zalen</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="top_1">
+        <br>Welkom gebruiker
+        <br>
+        <?php
+        echo 'Datum: ' . date('d F Y');
+        ?>
+
+    </div>
+    <div class="top_2">
+        <div class="part_1">
+            <table>
+                <tr>
+                    <td class="list">
+                        <a href="zalen.php">Zalen</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="reserveringen.php">Reserveringen</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="klanten.php">Klanten</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="extras.php">Extra's</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="overzichten.php">Overzichten</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="part_2">
+            <!--Tonen van data -->
+            <form method="post">
+                <label>
+                    Naam:
+                    <input class="naam" name="naam"  value="<?php echo $data['naam']?>">
+                </label>
+                <label>
+                    Prijs:
+                    <input class="prijs" name="prijs" value="<?php echo $data['prijs']?>">
+                </label>
+<!--                <input type="hidden" name="zaal_ID" value="--><?php //echo $_GET['zaal_ID']?><!--">-->
+                <button type="submit">Aanpassen</button>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>
