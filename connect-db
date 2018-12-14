@@ -1,0 +1,18 @@
+<?php
+		// verbindingsgegevens voor de database
+//		$servername="localhost";
+//		$database = "congrescentrum";
+//		$username = "congrescentrum";
+//		$password = "1234";
+//
+//		// verbinding maken met de database
+//		$conn = mysqli_connect($servername, $username, $password, $database);
+//
+//		// Check connection
+//		if (!$conn) {
+//			die("Connection failed: " . mysqli_connect_error());
+//		}
+$conn = new PDO('mysql:dbname=congrescentrum;host=127.0.0.1', 'congrescentrum', '1234', [
+    PDO::ATTR_ERRMODE=> PDO::ERRMODE_EXCEPTION
+]);
+?>
