@@ -1,0 +1,20 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Jarrin
+ * Date: 13/12/2018
+ * Time: 15:29
+ */
+
+if(!isset($_SESSION['user'])) {
+    header("Location: $baseurl/index.php?msg=Inloggen%20A.u.b.");
+    exit();
+}
+
+if(isset($_GET['uitloggen'])) {
+    session_destroy();
+    header("Location: $baseurl?msg=Uitgelogd");
+}
+
+// Debug:
+var_dump($_SESSION);
