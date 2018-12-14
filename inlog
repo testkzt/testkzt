@@ -1,0 +1,88 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Jarrin
+ * Date: 06/12/2018
+ * Time: 09:20
+ */
+
+
+require './boot.php';
+
+$password = $email = '';
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Basis checks
+
+    $email    =     filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+    $password =      filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Vul een geldig e-mail adres in';
+    }
+
+    if (!strlen(trim($password))) {
+        $errors[] = 'Vul een wachtwoord in';
+    }
+
+    if (empty($errors)) {
+        // Haal de gebruiker op bij gebruikersnaam
+        $sql = 'SELECT * FROM gebruikers WHERE email = :email';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([
+            ':email' => $email
+        ]);
+        // Fetch returns false als er niets is gevonden
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+//        var_dump($data); die;
+        if($data === false) {
+            $errors[] = 'Ongeldige gebruikersnaam/wachtwoord';
+        } else {
+            // Check het password
+//            var_dump($password, $data['password']); die;
+            if(!password_verify($password, $data['password'])) {
+                $errors[] = 'Ongeldige gebruikersnaam/wachtwoord';
+            } else {
+                // Alles klopt
+                $_SESSION['user'] = [
+                    'id' => $data['id'],
+                    'email' => $data['email'],
+                    'name' => $data['name']
+                ];
+                // Stuur de gebruiker door
+                header("Location: $baseurl/secured.php");
+            }
+        }
+    }
+}
+
+?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gelieve in te loggen</title>
+</head>
+<body>
+<form method="post">
+    <?php
+    if(!empty($errors)) {
+        foreach ($errors as $error) {
+            echo '- ' . $error . '<br>';
+        }
+    }
+    if(isset($_GET['msg'])) echo '- ' . $_GET['msg'] . '<br>';
+    ?>
+    <label>
+        E-mail:
+        <input type="text" name="email" value="<?php echo $email ?>" >
+    </label>
+    <label>
+        Wachtwoord:
+        <input type="password" name="password" >
+    </label>
+    <button>Inloggen</button>
+</form>
+</body>
+</html>
