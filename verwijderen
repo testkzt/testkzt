@@ -1,0 +1,10 @@
+<?php
+require 'connect-db.php';
+
+var_dump($_GET);
+
+$sql = "DELETE FROM `zalen` WHERE zaal_ID = :zaal_ID";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':zaal_ID' => $_GET['zaal_ID']]);
+
+header('Location: zalen.php');
