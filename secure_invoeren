@@ -1,0 +1,95 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Jarrin
+ * Date: 06/12/2018
+ * Time: 09:20
+ */
+require './connection.php';
+
+$id = "12' OR 1=1;";
+$sql = "SELECT * FROM gebruikers WHERE id = '$id'";
+echo $sql;
+var_dump($conn->query($sql)->fetchAll());
+die;
+    $errors = [];
+
+    $name = $email = $password = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_EMAIL);
+
+        if (strlen(trim($name)) === 0) {
+            $errors[] = 'Vul een naam in';
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Vul een geldig e-mail adres in';
+        }
+        if (!strlen(trim($password))) {
+            $errors[] = 'Vul een wachtwoord in';
+        }
+
+        if (empty($errors)) {
+            // Geen errors dus invoeren die hap!
+            $stmt = $conn->prepare('INSERT INTO `gebruikers` (`name`, `email`, `password`) VALUES(:name, :email, :password)');
+            $stmt->execute([
+                ':name' => $name,
+                ':email' => $email,
+                ':password' => password_hash($password, PASSWORD_DEFAULT)
+            ]);
+            if ($stmt->rowCount() === 0) {
+                // Er is iets misgegaan
+                $errors[] = 'Kon niet in database invoegen';
+            } else {
+                $name = $email = $password = '';
+            }
+        }
+
+    }
+
+?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoeren</title>
+    <style>
+        label {
+            display: block;
+            width: 350px;
+            clear: both;
+            margin-bottom: 15px;
+        }
+        label > input {
+            float: right;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+        <?php
+            if(!empty($errors)) {
+                foreach ($errors as $error) {
+                    echo '- ' . $error . '<br>';
+                }
+            }
+
+        ?>
+        <label>
+            Naam:
+            <input type="text" name="name" value="<?php echo $name ?>" >
+        </label>
+        <label>
+            E-mail:
+            <input type="text" name="email" value="<?php echo $email ?>" >
+        </label>
+        <label>
+            Wachtwoord:
+            <input type="password" name="password" >
+        </label>
+        <button>Invoeren</button>
+    </form>
+</body>
+</html>
