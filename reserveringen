@@ -1,0 +1,82 @@
+<?php
+require 'connect-db.php';
+try {
+    $sql = 'SELECT R.reservering_ID, R.klant_id, Z.naam, R.startdatum, R.einddatum
+        FROM reserveringen R
+        INNER JOIN zalen Z ON R.zaal_id = Z.zaal_ID
+        ORDER BY reservering_ID';
+
+    $q = $conn->query($sql);
+    $q->setFetchMode(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Could not connect to the database:" . $e->getMessage());
+}
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Reserveringen</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="top_1">
+        <br>Welkom gebruiker
+        </br>
+            <?php
+            echo 'Datum: ' . date('d F Y');
+            ?>
+        </div>
+    </div>
+    <div class="top_2">
+        <div class="part_1">
+            <table>
+                <tr>
+                    <td class="list">
+                        <a href="zalen.php">Zalen</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="reserveringen.php">Reserveringen</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="klanten.php">Klanten</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="extras.php">Extra's</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="list">
+                        <a href="overzichten.php">Overzichten</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="part_2">
+            <!--Tonen van data -->
+            <table  border='1' cellpadding='10'>
+                <thead>
+                <tr>
+                    <th>zaal naam</th>
+                    <th>startdatum</th>
+                    <th>einddatum</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php while ($row = $q->fetch()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['naam']); ?></td>
+                        <td><?php echo htmlspecialchars($row['startdatum']); ?></td>
+                        <td><?php echo htmlspecialchars($row['einddatum']); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
