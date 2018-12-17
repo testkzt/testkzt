@@ -1,0 +1,39 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Jarrin
+ * Date: 14/12/2018
+ * Time: 14:04
+ */
+
+
+require_once 'dompdf/autoload.inc.php';
+
+use Dompdf\Dompdf;
+
+// instantiate and use the dompdf class
+$dompdf = new Dompdf();
+
+$html = '<table style="border: 1px solid black;">
+<tr>
+    <th>Aantal</th>
+    <th>product</th>
+    <th>Prijs</th>
+</tr>
+<tr>
+    <td>2x</td>
+    <td>PS4</td>
+    <td>199,95</td>
+</tr>
+';
+
+$dompdf->loadHtml($html);
+
+// (Optional) Setup the paper size and orientation
+$dompdf->setPaper('A4', 'portrait');
+
+// Render the HTML as PDF
+$dompdf->render();
+
+// Output the generated PDF to Browser
+$dompdf->stream();
